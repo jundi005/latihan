@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Formulir ke Spreadsheet</title>
+</head>
+<body>
+  <h2>Kirim Data ke Spreadsheet</h2>
+  <form id="dataForm">
+    Nama: <input type="text" id="nama" required><br>
+    Email: <input type="email" id="email" required><br>
+    <button type="submit">Kirim</button>
+  </form>
+
+  <h2>Ambil Data dari Spreadsheet</h2>
+  <button onclick="getData()">Ambil Data</button>
+  <pre id="hasil"></pre>
+
+  <script>
+    const scriptURL = "https://script.google.com/macros/s/AKfycbyzBqdzhJjdL4N_PVDUJi1lvX_6Zpu_TftQytfCDaWqAO6es-dI0HkYDrNWo4Kr9VZhzA/exec";
+
+    // Kirim data ke Spreadsheet
+    document.getElementById('dataForm').addEventListener('submit', function(e){
+      e.preventDefault();
+      const data = {
+        nama: document.getElementById('nama').value,
+        email: document.getElementById('email').value
+      };
+      fetch(scriptURL, {
+        method: 'POST',
+        body: JSON.stringify(data),
+        headers: {'Content-Type': 'application/json'}
+      })
+      .then(res => res.text())
+      .then(res => alert("Data berhasil dikirim!"))
+      .catch(err => alert("Gagal: " + err));
+    });
+
+    // Ambil data dari Spreadsheet
+    function getData() {
+      fetch(scriptURL)
+        .then(res => res.json())
+        .then(data => {
+          let text = "";
+          data.forEach(row => {
+            text += row.join(" | ") + "\n";
+          });
+          document.getElementById('hasil').textContent = text;
+        });
+    }
+  </script>
+</body>
+</html>
